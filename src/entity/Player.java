@@ -18,6 +18,8 @@ public class Player extends Entity {
     public final int screenY;
 
     public int hasKey = 0;
+    public BufferedImage[][] playerImages;
+    public int characterCount = 2; // Jumlah desain karakter
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -35,7 +37,7 @@ public class Player extends Entity {
         solidArea.height = 24;
 
         setDefaultValues();
-        getPlayerImage();
+        loadPlayerImages();
     }
 
     public void setDefaultValues() {
@@ -45,16 +47,29 @@ public class Player extends Entity {
         direction = "down";
     }
 
-    public void getPlayerImage() { // mengambil resource
+    public void loadPlayerImages() {
         try {
-            up1 = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_up_1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_up_2.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_down_1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_down_2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_right_1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_right_2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_left_1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_left_2.png"));
+            playerImages = new BufferedImage[characterCount][8]; // [desain][arah]
+
+            // Load desain pertama
+            playerImages[0][0] = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_up_1.png"));
+            playerImages[0][1] = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_up_2.png"));
+            playerImages[0][2] = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_down_1.png"));
+            playerImages[0][3] = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_down_2.png"));
+            playerImages[0][4] = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_left_1.png"));
+            playerImages[0][5] = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_left_2.png"));
+            playerImages[0][6] = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_right_1.png"));
+            playerImages[0][7] = ImageIO.read(getClass().getResourceAsStream("/res/player/boy_right_2.png"));
+
+            // Load desain kedua
+            playerImages[1][0] = ImageIO.read(getClass().getResourceAsStream("/res/player/pokemon_up_1.png"));
+            playerImages[1][1] = ImageIO.read(getClass().getResourceAsStream("/res/player/pokemon_up_2.png"));
+            playerImages[1][2] = ImageIO.read(getClass().getResourceAsStream("/res/player/pokemon_down_1.png"));
+            playerImages[1][3] = ImageIO.read(getClass().getResourceAsStream("/res/player/pokemon_down_2.png"));
+            playerImages[1][4] = ImageIO.read(getClass().getResourceAsStream("/res/player/pokemon_left_1.png"));
+            playerImages[1][5] = ImageIO.read(getClass().getResourceAsStream("/res/player/pokemon_left_2.png"));
+            playerImages[1][6] = ImageIO.read(getClass().getResourceAsStream("/res/player/pokemon_right_1.png"));
+            playerImages[1][7] = ImageIO.read(getClass().getResourceAsStream("/res/player/pokemon_right_2.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -155,43 +170,44 @@ public class Player extends Entity {
     }
 
     public void draw(Graphics2D g2) {
-        // g2.setColor(Color.white);/// set screen color
-        // g2.fillRect(x, y, gp.tileSize, gp.tileSize); // set the position and size of
-        // character
-
         BufferedImage image = null;
+
+        int charIndex = gp.ui.charSelection; // Indeks desain karakter berdasarkan gp.ui.charSelection
+        if (charIndex >= playerImages.length) {
+            charIndex = 0; // Default ke desain pertama jika indeks invalid
+        }
+
         switch (direction) {
             case "up":
                 if (spriteNum == 1) {
-                    image = up1;
+                    image = playerImages[charIndex][0];
                 } else if (spriteNum == 2) {
-                    image = up2;
+                    image = playerImages[charIndex][1];
                 }
                 break;
             case "down":
                 if (spriteNum == 1) {
-                    image = down1;
+                    image = playerImages[charIndex][2];
                 } else if (spriteNum == 2) {
-                    image = down2;
-                }
-                break;
-            case "right":
-                if (spriteNum == 1) {
-                    image = right1;
-                } else if (spriteNum == 2) {
-                    image = right2;
+                    image = playerImages[charIndex][3];
                 }
                 break;
             case "left":
                 if (spriteNum == 1) {
-                    image = left1;
+                    image = playerImages[charIndex][4];
                 } else if (spriteNum == 2) {
-                    image = left2;
+                    image = playerImages[charIndex][5];
+                }
+                break;
+            case "right":
+                if (spriteNum == 1) {
+                    image = playerImages[charIndex][6];
+                } else if (spriteNum == 2) {
+                    image = playerImages[charIndex][7];
                 }
                 break;
         }
 
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);// player position is fixed at the center
-                                                                              // of the screen
+        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
 }

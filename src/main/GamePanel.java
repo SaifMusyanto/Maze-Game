@@ -32,7 +32,7 @@ public class GamePanel extends JPanel implements Runnable {
     int FPS = 60;
 
     TileManager tileM = new TileManager(this);
-    KeyHandler keyH = new KeyHandler(); // variable to receive key input
+    KeyHandler keyH = new KeyHandler(this); // variable to receive key input
     Sound music = new Sound();
     Sound soundEffect = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
@@ -43,6 +43,12 @@ public class GamePanel extends JPanel implements Runnable {
     // ENTITY AND OBJECT
     public Player player = new Player(this, keyH); // set player entity
     public SuperObject obj[] = new SuperObject[10]; // menampilkan maximal 10 object
+
+    // GAME STATE
+    public int gameState;
+    public final int titleState = 0;
+    public final int playState = 1;
+    public final int pauseState = 2;
 
 
     public GamePanel() {
@@ -55,6 +61,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void setupGame(){// 
         aSetter.setObject();
+        gameState = titleState;
 
         playMusic(0);// play BlueBoyAdventure song
     }
@@ -103,7 +110,14 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        player.update();
+        
+        if (gameState == playState) {
+            player.update();
+        }
+        if (gameState == pauseState) {
+            
+        }
+
     }
 
     public void paintComponent(Graphics g) {// paint the component
@@ -111,17 +125,25 @@ public class GamePanel extends JPanel implements Runnable {
 
         Graphics2D g2 = (Graphics2D) g;// casting menjadi instance ofGraphics2D
 
-        tileM.draw(g2);// draw the map first
+        if (gameState == titleState) {
+            ui.draw(g2);
+            
+        }// draw title screen
+        else {
+            tileM.draw(g2);// draw the map first
+    
+            for (int i = 0; i < obj.length; i++) { //draw object
+                if(obj[i] != null){
+                    obj[i].draw(g2, this);
+                }
+            } // draw an object
+    
+            player.draw(g2);// draw the character
+    
+            ui.draw(g2);// draw the text
 
-        for (int i = 0; i < obj.length; i++) { //draw object
-            if(obj[i] != null){
-                obj[i].draw(g2, this);
-            }
-        } // draw an object
+        }
 
-        player.draw(g2);// draw the character
-
-        ui.draw(g2);// draw the text
 
         g2.dispose();
     }
